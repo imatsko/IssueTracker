@@ -1,26 +1,82 @@
-# -*- coding: utf-8 -*-
-# this file is released under public domain and you can use without limitations
-
-#########################################################################
-## This is a sample controller
-## - index is the default action of any application
-## - user is required for authentication and authorization
-## - download is for downloading files uploaded in the db (does streaming)
-## - call exposes all registered services (none by default)
-#########################################################################
-
+# coding: utf8
 
 def index():
-    """
-    example action using the internationalization operator T and flash
-    rendered by views/default/index.html or views/generic.html
+    issues = db().select(db.issue.id, db.issue.title, orderby=db.issue.title)
+    return dict(issues=issues)
 
-    if you need a simple wiki simply replace the two lines below with:
-    return auth.wiki()
-    """
-    response.flash = T("Welcome to web2py!")
-    return dict(message=T('Hello World'))
+@auth.requires_login()
+def create():    
+    db.comment_post.body.requires = None
+    form = SQLFORM(db.issue)
+    comment_element = TR(LABEL('Comment'),
+        TEXTAREA(_id='comment',value=''))
+    form[0].insert(-1,comment_element)
+    
+    def on_validation_comment(form):
+        form.vars.root_comment = db.comment_post.insert(body=form.vars.comment)
+    
+    if form.process(onvalidation=on_validation_comment).accepted:
+        response.flash = 'issue added'
+        redirect(URL('show', args=[form.vars.id]))
 
+    return dict(form=form)
+
+@auth.requires_login()
+def edit():
+    this_issue = db.issue(request.args(0,cast=int)) or redirect(URL('index'))
+    form = SQLFORM(db.issue, this_issue, deletable = True)
+    root_comment = db.comment_post(this_issue.root_comment)
+    
+    db.comment_post.body.requires = None
+    
+    comment_element = TR(LABEL('Comment'),
+    TEXTAREA(_id='comment',value=root_comment.body))
+    form[0].insert(-1,comment_element)
+
+    def on_validation_comment(form):
+        db.comment_post[root_comment.id] = dict(body=form.vars.comment)
+        if form.vars.deleted:
+            del db.comment_post[root_comment.id]
+
+    form.process(onvalidation=on_validation_comment, next=URL('show',args=request.args))
+        
+    return dict(form=form)
+
+def show():
+    issue = db.issue(request.args(0,cast=int)) or redirect(URL('index'))    
+    root_comment = db.comment_post[issue.root_comment]
+    
+    def make_comment_tree(comment):
+        tree_elem = dict()
+        tree_elem['body'] = comment.body
+        user = db.auth_user[comment.created_by]
+        tree_elem['created_by'] = '%s %s' % (user.first_name, user.last_name)
+        tree_elem['created_on'] = str(comment.created_on)
+        tree_elem['children'] = list()
+        
+        for child in db(db.comment_post.prev_comment == comment.id).select():
+            tree_elem['children'].append(make_comment_tree(child))
+        
+        tree_elem['new_comment_form'] = SQLFORM(db.comment_post, submit_button="Post comment", _formname='comment_'+str(comment.id))
+        tree_elem['new_comment_form'].vars.prev_comment = comment.id
+        tree_elem['new_comment_form'].process(next=URL(show, args=request.args),formname='comment_'+str(comment.id))
+        return tree_elem
+    
+    comment_tree = make_comment_tree(root_comment)
+    
+
+    attachments = db(issue.id == db.attachment.issue_id).select()
+    return dict(issue=issue, attachments=attachments, comment_tree=comment_tree)
+
+def attachments():
+     issue = db.issue(request.args(0,cast=int)) or redirect(URL('index'))
+     db.attachment.issue_id.default = issue.id
+     db.attachment.issue_id.writable = False
+     grid = SQLFORM.grid(db.attachment.issue_id==issue.id,args=[issue.id], csv=False, searchable=False, fields=[db.attachment.name, db.attachment.doc])
+     return dict(issue=issue, grid=grid)
+
+def download():
+     return response.download(request, db)
 
 def user():
     """
@@ -38,39 +94,3 @@ def user():
     to decorate functions that need access control
     """
     return dict(form=auth())
-
-@cache.action()
-def download():
-    """
-    allows downloading of uploaded files
-    http://..../[app]/default/download/[filename]
-    """
-    return response.download(request, db)
-
-
-def call():
-    """
-    exposes services. for example:
-    http://..../[app]/default/call/jsonrpc
-    decorate with @services.jsonrpc the functions to expose
-    supports xml, json, xmlrpc, jsonrpc, amfrpc, rss, csv
-    """
-    return service()
-
-
-@auth.requires_signature()
-def data():
-    """
-    http://..../[app]/default/data/tables
-    http://..../[app]/default/data/create/[table]
-    http://..../[app]/default/data/read/[table]/[id]
-    http://..../[app]/default/data/update/[table]/[id]
-    http://..../[app]/default/data/delete/[table]/[id]
-    http://..../[app]/default/data/select/[table]
-    http://..../[app]/default/data/search/[table]
-    but URLs must be signed, i.e. linked with
-      A('table',_href=URL('data/tables',user_signature=True))
-    or with the signed load operator
-      LOAD('default','data.load',args='tables',ajax=True,user_signature=True)
-    """
-    return dict(form=crud())
