@@ -1,0 +1,4 @@
+{{extend 'layout.html'}}
+<h1>attachments for issue: {{=issue.title}}</h1>
+[ {{=A('show', _href=URL('show', args=request.args))}} ]<br />
+{{=grid}}

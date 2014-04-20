@@ -1,0 +1,5 @@
+errors/*
+cache/*
+sessions/*
+*.log
+*.bak

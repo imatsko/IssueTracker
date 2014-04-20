@@ -1,0 +1,9 @@
+{{extend 'layout.html'}}
+<h1>Issues</h1>
+<ul>
+{{for issue in issues:}}
+    {{=LI(A(issue.title, _href=URL('show', args=issue.id)))}}
+    {{pass}}
+</ul>
+
+[ {{=A('create issue', _href=URL('create'))}} ]
