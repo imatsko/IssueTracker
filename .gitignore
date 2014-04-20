@@ -1,5 +1,7 @@
 errors/*
 cache/*
 sessions/*
+databases/*
 *.log
 *.bak
+*.pyc

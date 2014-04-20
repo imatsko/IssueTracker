@@ -1,8 +1,6 @@
 {{extend 'layout.html'}}
 
 <h1>{{=issue.title}}</h1>
-[ {{=A('edit', _href=URL('edit', args=request.args))}}
-| {{=A('attachments', _href=URL('attachments', args=request.args))}}]<br />
 {{=MARKMIN(issue.body)}}
 [ {{=A('edit', _href=URL('edit', args=request.args))}}
 | {{=A('attachments', _href=URL('attachments', args=request.args))}}]<br />
@@ -15,3 +13,26 @@
         {{pass}}
     </ul>
     {{pass}}
+
+
+{{def build_comment_view(comment):}}
+{{if comment['body']:}}
+    {{=LI(str(comment['created_by'])+' on '+str(comment['created_on'])+': '+str(comment['body']))}}
+    {{pass}}
+{{=comment['new_comment_form']}}
+<ul>
+    {{for child in comment['children']:}}
+        {{build_comment_view(child)}}
+        {{pass}}
+</ul>
+{{return}}
+
+
+<ul>
+    <h3>Comments:</h3>
+    {{build_comment_view(comment_tree)}}
+</ul>
+
+    
+    
+    
