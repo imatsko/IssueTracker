@@ -29,6 +29,9 @@ def edit():
     
     db.comment_post.body.requires = None
     
+    form.vars.modified_on = request.now
+    form.vars.modified_by = auth.user_id
+    
     comment_element = TR(LABEL('Comment'),
     TEXTAREA(_id='comment',value=root_comment.body))
     form[0].insert(-1,comment_element)
@@ -64,7 +67,9 @@ def show():
     
     comment_tree = make_comment_tree(root_comment)
     
-
+    issue.created_by_user = db.auth_user[issue.created_by]
+    issue.modified_by_user = db.auth_user[issue.modified_by]
+    
     attachments = db(issue.id == db.attachment.issue_id).select()
     return dict(issue=issue, attachments=attachments, comment_tree=comment_tree)
 

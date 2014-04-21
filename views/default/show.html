@@ -1,6 +1,10 @@
 {{extend 'layout.html'}}
 
 <h1>{{=issue.title}}</h1>
+<i>{{=T("Created by: %s %s on %s", (issue.created_by_user.first_name, issue.created_by_user.last_name, str(issue.created_on)))}}</i><br>
+{{if (issue.created_by, issue.created_on) != (issue.modified_by, issue.modified_on):}}
+    <i>{{=T("Last modified by: %s %s on %s" , (issue.modified_by_user.first_name, issue.modified_by_user.last_name, str(issue.modified_on)))}}</i>
+    {{pass}}
 {{=MARKMIN(issue.body)}}
 [ {{=A('edit', _href=URL('edit', args=request.args))}}
 | {{=A('attachments', _href=URL('attachments', args=request.args))}}]<br />

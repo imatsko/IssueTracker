@@ -14,10 +14,10 @@ db.comment_post.body.requires = IS_NOT_EMPTY()
 db.define_table('issue',
     Field('title'),
     Field('body', 'text'),
-#     Field('created_on', 'datetime', default=request.now),
-#     Field('created_by', 'reference auth_user', default=auth.user_id),
-#     Field('modified_on', 'datetime', default=request.now),
-#     Field('modified_by', 'reference auth_user', default=auth.user_id),
+    Field('created_on', 'datetime', default=request.now, readable=False, writable=False),
+    Field('created_by', 'reference auth_user', default=auth.user_id, readable=False, writable=False),
+    Field('modified_on', 'datetime', default=request.now, readable=False, writable=False),
+    Field('modified_by', 'reference auth_user', default=auth.user_id, readable=False, writable=False),
     Field('root_comment', 'reference comment_post', readable=False, writable=False),
     format='%(title)s')
 
