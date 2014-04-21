@@ -59,7 +59,8 @@ def show():
         
         tree_elem['new_comment_form'] = SQLFORM(db.comment_post, submit_button="Post comment", _formname='comment_'+str(comment.id))
         tree_elem['new_comment_form'].vars.prev_comment = comment.id
-        tree_elem['new_comment_form'].process(next=URL(show, args=request.args),formname='comment_'+str(comment.id))
+        if(tree_elem['new_comment_form'].process(next=URL(show, args=request.args),formname='comment_'+str(comment.id)).accepted):
+            response.flash = T("Comment posted")
         return tree_elem
     
     comment_tree = make_comment_tree(root_comment)
