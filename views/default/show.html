@@ -18,6 +18,16 @@
     </ul>
     {{pass}}
 
+    <h2>{{=T("Status history")}}</h2>
+    <ul>
+        {{for stat in status_history:}}
+            {{=LI(statuses[stat.stat_value], 
+                I(T("Set by: %s %s on %s", (db.auth_user[stat.set_by].first_name, db.auth_user[stat.set_by].last_name, stat.set_on))),
+                        )}}
+            {{pass}}
+    </ul>
+    <h2>{{=T("New status")}}</h2>
+    {{=new_status_form}}
 
 {{def build_comment_view(comment):}}
 {{if comment['body']:}}
