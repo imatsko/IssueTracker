@@ -2,11 +2,11 @@
 
 <h1>{{=issue.title}}</h1>
 {{=MARKMIN(issue.body)}}
-[ {{=A('edit', _href=URL('edit', args=request.args))}}
-| {{=A('attachments', _href=URL('attachments', args=request.args))}}]<br />
+[ {{=A(T("edit"), _href=URL('edit', args=request.args))}}
+| {{=A(T("documents"), _href=URL('attachments', args=request.args))}}]<br />
 
 {{if attachments:}}
-    <h3>Attachments:</h3>
+    <h3>{{=T("Attachments:")}}</h3>
     <ul>
     {{for att in attachments:}}
         {{=LI(A(att.name, _href=URL('download', args=att.doc)))}}
@@ -29,7 +29,7 @@
 
 
 <ul>
-    <h3>Comments:</h3>
+    <h3>{{=T("Comments:")}}</h3>
     {{build_comment_view(comment_tree)}}
 </ul>
 

@@ -2,7 +2,7 @@
 
 db.define_table('comment_post',
     Field('prev_comment', 'reference comment_post', readable=False, writable=False),
-    Field('body', 'text'),
+    Field('body', 'text', label=T("Comment")),
     Field('created_on', 'datetime', default=request.now, readable=False, writable=False),
     Field('created_by', 'reference auth_user', default=auth.user_id, readable=False, writable=False)
     )
@@ -12,8 +12,8 @@ db.comment_post.body.requires = IS_NOT_EMPTY()
 
 
 db.define_table('issue',
-    Field('title'),
-    Field('body', 'text'),
+    Field('title', label=T("Title")),
+    Field('body', 'text', label=T("Description")),
 #     Field('created_on', 'datetime', default=request.now),
 #     Field('created_by', 'reference auth_user', default=auth.user_id),
 #     Field('modified_on', 'datetime', default=request.now),
@@ -31,9 +31,9 @@ db.issue.root_comment.requires = IS_IN_DB(db, 'comment_post.id')
 
 db.define_table('attachment',
     Field('issue_id', 'reference issue'),
-    Field('name'),
-    Field('doc', 'upload'),
-    Field('description', 'text'),
+    Field('name', label=T("Name")),
+    Field('doc', 'upload', label=T("Document")),
+    Field('description', 'text', label=T("Description")),
 #     Field('created_on', 'datetime', default=request.now),
 #     Field('created_by', 'reference auth_user', default=auth.user_id),
     format='%(name)s')
