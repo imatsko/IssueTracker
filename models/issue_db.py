@@ -12,12 +12,12 @@ db.comment_post.body.requires = IS_NOT_EMPTY()
 
 
 db.define_table('issue',
-    Field('title', label=T("Title")),
-    Field('body', 'text', label=T("Description")),
-#     Field('created_on', 'datetime', default=request.now),
-#     Field('created_by', 'reference auth_user', default=auth.user_id),
-#     Field('modified_on', 'datetime', default=request.now),
-#     Field('modified_by', 'reference auth_user', default=auth.user_id),
+    Field('title'),
+    Field('body', 'text'),
+    Field('created_on', 'datetime', default=request.now, readable=False, writable=False),
+    Field('created_by', 'reference auth_user', default=auth.user_id, readable=False, writable=False),
+    Field('modified_on', 'datetime', default=request.now, readable=False, writable=False),
+    Field('modified_by', 'reference auth_user', default=auth.user_id, readable=False, writable=False),
     Field('root_comment', 'reference comment_post', readable=False, writable=False),
     format='%(title)s')
 
@@ -26,8 +26,18 @@ db.issue.title.requires = IS_NOT_IN_DB(db, 'issue.title')
 db.issue.body.requires = IS_NOT_EMPTY()
 db.issue.root_comment.requires = IS_IN_DB(db, 'comment_post.id')
 
-# db.issue.created_by.readable = db.issue.created_by.writable = False
-# db.issue.created_on.readable = db.issue.created_on.writable = False
+statuses = {'new':T("New"),
+        'started':T("Started"),
+        'closed':T("Closed"),
+        'reopened':T("Reopened")}
+
+db.define_table('status',
+    Field('issue', 'reference issue', readable=False, writable=False),
+    Field('set_on', 'datetime', default=request.now, readable=False, writable=False),
+    Field('set_by', 'reference auth_user', default=auth.user_id, readable=False, writable=False),
+    Field('stat_value', requires=IS_IN_SET(statuses, zero=None), default='new'),
+    Field('description', 'text')
+    )
 
 db.define_table('attachment',
     Field('issue_id', 'reference issue'),
