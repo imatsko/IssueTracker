@@ -8,7 +8,7 @@ def index():
 def create():    
     db.comment_post.body.requires = None
     form = SQLFORM(db.issue)
-    comment_element = TR(LABEL('Comment'),
+    comment_element = TR(LABEL(T('Comment')),
         TEXTAREA(_id='comment',value=''))
     form[0].insert(-1,comment_element)
     
@@ -16,7 +16,7 @@ def create():
         form.vars.root_comment = db.comment_post.insert(body=form.vars.comment)
     
     if form.process(onvalidation=on_validation_comment).accepted:
-        response.flash = 'issue added'
+        response.flash = T('issue added')
         redirect(URL('show', args=[form.vars.id]))
 
     return dict(form=form)
@@ -29,7 +29,7 @@ def edit():
     
     db.comment_post.body.requires = None
     
-    comment_element = TR(LABEL('Comment'),
+    comment_element = TR(LABEL(T('Comment')),
     TEXTAREA(_id='comment',value=root_comment.body))
     form[0].insert(-1,comment_element)
 
@@ -57,7 +57,7 @@ def show():
         for child in db(db.comment_post.prev_comment == comment.id).select():
             tree_elem['children'].append(make_comment_tree(child))
         
-        tree_elem['new_comment_form'] = SQLFORM(db.comment_post, submit_button="Post comment", _formname='comment_'+str(comment.id))
+        tree_elem['new_comment_form'] = SQLFORM(db.comment_post, submit_button=T("Post comment"), _formname='comment_'+str(comment.id))
         tree_elem['new_comment_form'].vars.prev_comment = comment.id
         tree_elem['new_comment_form'].process(next=URL(show, args=request.args),formname='comment_'+str(comment.id))
         return tree_elem
