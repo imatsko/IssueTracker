@@ -74,7 +74,7 @@ def show():
     
     attachments = db(issue.id == db.attachment.issue_id).select()
     
-    status_history = db(db.status.issue == issue.id).select(orderby=db.status.set_by)
+    status_history = db(db.status.issue == issue.id).select(orderby=db.status.set_on)
     
     last_stat = status_history.last()
     if last_stat.stat_value == 'closed':

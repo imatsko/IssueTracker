@@ -1,0 +1,26 @@
+{{extend 'layout.html'}}
+
+<h1>{{=team.name}}</h1>
+{{=I(team.description)}}
+[ {{=A(T("edit"), _href=URL('edit', args=request.args))}}]<br />
+
+<h3>{{=T("Membership changes history:")}}</h3>
+<ul>
+{{for hist in membership_history:}}
+    {{=LI(I(BEAUTIFY(hist)))}}
+    {{pass}}
+</ul>
+
+
+<h3>{{=T("Current members:")}}</h3>
+<ul>
+{{for member in current_members:}}
+    {{=LI(I(BEAUTIFY(member)))}}
+    {{pass}}
+</ul>
+
+<h3>{{=T("New member")}}</h3>
+{{=new_member_form}}
+
+    
+    

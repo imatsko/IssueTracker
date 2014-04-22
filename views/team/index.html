@@ -1,0 +1,9 @@
+{{extend 'layout.html'}}
+<h1>{{=T("Teams")}}</h1>
+<ul>
+{{for team in teams:}}
+    {{=LI(A(team.name, _href=URL('show', args=team.id)), I(team.description))}}
+    {{pass}}
+</ul>
+
+[ {{=A(T("create team"), _href=URL('create'))}} ]
