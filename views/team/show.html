@@ -22,5 +22,21 @@
 <h3>{{=T("New member")}}</h3>
 {{=new_member_form}}
 
-    
+<h3>{{=T("Managers changes history:")}}</h3>
+<ul>
+{{for hist in management_history:}}
+    {{=LI(I(BEAUTIFY(hist)))}}
+    {{pass}}
+</ul>
+
+
+<h3>{{=T("Current managers:")}}</h3>
+<ul>
+{{for manager in current_managers:}}
+    {{=LI(I(BEAUTIFY(manager)))}}
+    {{pass}}
+</ul>
+
+<h3>{{=T("New manager")}}</h3>
+{{=new_manager_form}}    
     

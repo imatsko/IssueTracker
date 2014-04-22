@@ -27,6 +27,10 @@ response.menu = [
     (T('Issues'), False, URL('default', 'index'), [
         (T('List Issues'), False, URL('default', 'index'), []),
         (T('New Issue'), False, URL('default', 'create'), []),
+        ]),
+    (T('Teams'), False, URL('team', 'index'), [
+        (T('List Teams'), False, URL('team', 'index'), []),
+        (T('New Team'), False, URL('team', 'create'), []),
         ])
 ]
 
