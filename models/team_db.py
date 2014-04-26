@@ -9,16 +9,16 @@ db.define_table('team',
     )
 
 db.define_table('team_membership',
-    Field('auth_user', 'reference auth_user', readable=False, writable=False),
-    Field('team', 'reference team', readable=False, writable=False),
+    Field('auth_user', 'reference auth_user', notnull=True, readable=False, writable=False),
+    Field('team', 'reference team', notnull=True, readable=False, writable=False),
     Field('is_member', 'boolean', readable=False, writable=False),
     Field('set_on', 'datetime', default=request.now, readable=False, writable=False),
     Field('set_by', 'reference auth_user', default=auth.user_id, readable=False, writable=False)
     )
 
 db.define_table('team_management',
-    Field('auth_user', 'reference auth_user', readable=False, writable=False),
-    Field('team', 'reference team', readable=False, writable=False),
+    Field('auth_user', 'reference auth_user', notnull=True, readable=False, writable=False),
+    Field('team', 'reference team', notnull=True, readable=False, writable=False),
     Field('is_manager', 'boolean', readable=False, writable=False),
     Field('set_on', 'datetime', default=request.now, readable=False, writable=False),
     Field('set_by', 'reference auth_user', default=auth.user_id, readable=False, writable=False)

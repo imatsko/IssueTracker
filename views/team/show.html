@@ -4,24 +4,34 @@
 {{=I(team.description)}}
 [ {{=A(T("edit"), _href=URL('edit', args=request.args))}}]<br />
 
-<h3>{{=T("Membership changes history:")}}</h3>
+<h4>{{=T("Membership changes history:")}}</h4>
 <ul>
 {{for hist in membership_history:}}
-    {{=LI(I(BEAUTIFY(hist)))}}
+    {{=LI(I("%s %s %s by %s %s at %s" % (hist.auth_user.first_name, 
+                hist.auth_user.last_name,
+                ("added" if hist.is_member else "removed"),
+                hist.set_by.first_name,
+                hist.set_by.last_name,
+                str(hist.set_on)
+                )))}}
     {{pass}}
 </ul>
-
 
 <h3>{{=T("Current members:")}}</h3>
 <ul>
 {{for member in current_members:}}
-    {{=LI(I(BEAUTIFY(member)))}}
+    {{=LI(I("%s %s" % (member.auth_user.first_name,
+                member.auth_user.last_name),
+        member.delete_form.custom.begin,
+        member.delete_form.custom.submit,
+        member.delete_form.custom.end)
+                )}}
     {{pass}}
 </ul>
 
 <h3>{{=T("New member")}}</h3>
 {{=new_member_form}}
-
+<!--
 <h3>{{=T("Managers changes history:")}}</h3>
 <ul>
 {{for hist in management_history:}}
@@ -39,4 +49,4 @@
 
 <h3>{{=T("New manager")}}</h3>
 {{=new_manager_form}}    
-    
+    -->

@@ -29,21 +29,24 @@ def show():
         having=(db.team_membership.is_member == True))
     
     for member in current_members:
-        member.delete_form = SQLFORM(db.team_membership)
+        member.delete_form = SQLFORM(db.team_membership,
+            hidden=dict(formname='delete_member_'+str(member.auth_user)),
+            submit_button = T("Remove"))
         
         member.delete_form.vars.auth_user = member.auth_user
         member.delete_form.vars.team = member.team
         member.delete_form.vars.is_member = False
         if member.delete_form.process(next=URL('show', args=request.args),
-            _formname='delete_member_'+str(member.auth_user)).accepted:
+            formname='delete_member_'+str(member.auth_user)
+            ).accepted:
             response.flash = T("Member removed")
         
     db.team_membership.auth_user.readable = db.team_membership.auth_user.writable = True
-    new_member_form = SQLFORM(db.team_membership)
+    new_member_form = SQLFORM(db.team_membership, hidden=dict(formname="new_member"))
     new_member_form.vars.is_member = True
     new_member_form.vars.team = this_team
     
-    if new_member_form.process(next=URL('show', args=request.args), _formname="new_member").accepted:
+    if new_member_form.process(next=URL('show', args=request.args), formname="new_member").accepted:
         response.flash = T("New member added")
 
     management_history = db(db.team_management.team == this_team.id).select(orderby=db.team_management.set_on)
