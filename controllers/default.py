@@ -1,8 +1,23 @@
 # coding: utf8
 
 def index():
+    new_set = dict(statuses)
+    new_set["all"] = "ALL"
+    
     issues = db().select(db.issue.id, db.issue.title, orderby=db.issue.title)
-    return dict(issues=issues)
+    
+    form = SQLFORM.factory(Field('status', default="all", requires=IS_IN_SET(new_set, zero=None)), submit_button=T("FIlter"))
+    if form.process(keepvalues=True).accepted:
+        if form.vars.status != 'all':
+            new_issues = []
+            for issue in issues:
+                status_history = db(db.status.issue == issue.id).select(orderby=db.status.set_on)
+                last_stat = status_history.last()
+                if last_stat.stat_value == form.vars.status:
+                    new_issues.append(issue)
+            issues = new_issues
+
+    return dict(issues=issues, form=form)
 
 @auth.requires_login()
 def create():    
