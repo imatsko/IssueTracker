@@ -57,13 +57,16 @@ def show():
         having=(db.team_management.is_manager == True))
     
     for manager in current_managers:
-        manager.delete_form = SQLFORM(db.team_management)
+        manager.delete_form = SQLFORM(db.team_management,
+            hidden=dict(formname='delete_manager_'+str(member.auth_user)),
+            submit_button = T("Remove"))
+        
         
         manager.delete_form.vars.auth_user = manager.auth_user
         manager.delete_form.vars.team = manager.team
         manager.delete_form.vars.is_manager = False
         if manager.delete_form.process(next=URL('show', args=request.args),
-            _formname='delete_manager_'+str(manager.auth_user)).accepted:
+            formname='delete_manager_'+str(manager.auth_user)).accepted:
             response.flash = T("Member removed")
         
     db.team_management.auth_user.readable = db.team_management.auth_user.writable = True
@@ -71,7 +74,7 @@ def show():
     new_manager_form.vars.is_manager = True
     new_manager_form.vars.team = this_team
     
-    if new_manager_form.process(next=URL('show', args=request.args), _formname="new_manager").accepted:
+    if new_manager_form.process(next=URL('show', args=request.args), formname="new_manager").accepted:
         response.flash = T("New manager added")
         
     return dict(team=this_team,

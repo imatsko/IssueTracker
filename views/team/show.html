@@ -31,11 +31,17 @@
 
 <h3>{{=T("New member")}}</h3>
 {{=new_member_form}}
-<!--
+
 <h3>{{=T("Managers changes history:")}}</h3>
 <ul>
 {{for hist in management_history:}}
-    {{=LI(I(BEAUTIFY(hist)))}}
+    {{=LI(I("%s %s %s by %s %s at %s" % (hist.auth_user.first_name, 
+                    hist.auth_user.last_name,
+                    ("set manager" if hist.is_manager else "removed from managers"),
+                    hist.set_by.first_name,
+                    hist.set_by.last_name,
+                    str(hist.set_on)
+                    )))}}
     {{pass}}
 </ul>
 
@@ -43,10 +49,14 @@
 <h3>{{=T("Current managers:")}}</h3>
 <ul>
 {{for manager in current_managers:}}
-    {{=LI(I(BEAUTIFY(manager)))}}
+    {{=LI(I("%s %s" % (manager.auth_user.first_name,
+                manager.auth_user.last_name),
+        manager.delete_form.custom.begin,
+        manager.delete_form.custom.submit,
+        manager.delete_form.custom.end)
+                )}}
     {{pass}}
 </ul>
 
 <h3>{{=T("New manager")}}</h3>
 {{=new_manager_form}}    
-    -->
