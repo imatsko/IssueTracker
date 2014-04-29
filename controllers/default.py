@@ -95,11 +95,45 @@ def show():
         response.flash = T("new status is set")
         redirect(URL('show', args=request.args))
         
+    ###################################################    
+#    this_team = db.team(request.args(0,cast=int)) or redirect(URL('index'))
+    
+#    membership_history = db(db.team_membership.team == this_team.id).select(orderby=db.team_membership.set_on)
+
+    current_teams = db(db.team_working.issue == issue.id).select(db.team_working.ALL,
+        orderby=db.team_working.set_on,
+        groupby=db.team_working.team,
+        having=(db.team_working.is_working == True))
+    
+    for team_working in current_teams:
+        team_working.delete_form = SQLFORM(db.team_working,
+            hidden=dict(formname='delete_working_'+str(team_working.team)),
+            submit_button = T("Remove"))
+        
+        team_working.delete_form.vars.team = team_working.team
+        team_working.delete_form.vars.issue = issue.id
+        team_working.delete_form.vars.is_working = False
+        if team_working.delete_form.process(next=URL('show', args=request.args),
+            formname='delete_working_'+str(team_working.team)
+            ).accepted:
+            response.flash = T("Team removed")
+        
+    db.team_working.team.readable = db.team_working.team.writable = True
+    new_team_form = SQLFORM(db.team_working, hidden=dict(formname="new_team"))
+    new_team_form.vars.is_working = True
+    new_team_form.vars.issue = issue.id
+    
+    if new_team_form.process(next=URL('show', args=request.args), formname="new_team").accepted:
+        response.flash = T("New team added")
+        
     return dict(issue=issue, 
         attachments=attachments, 
         comment_tree=comment_tree, 
         status_history=status_history, 
-        new_status_form=new_status_form)
+        new_status_form=new_status_form,
+        current_teams=current_teams,
+        new_team_form=new_team_form
+        )
 
 def attachments():
      issue = db.issue(request.args(0,cast=int)) or redirect(URL('index'))
